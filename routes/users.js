@@ -4,7 +4,12 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send({token: req.session.token});
+  if (req.session.token){
+    res.send({token: req.session.token});
+  } else {
+    res.status(401).send()
+  }
+  
 });
 
 router.post('/auth', function(req, res, next) {
@@ -27,10 +32,13 @@ router.post('/auth', function(req, res, next) {
       res.send({token});
     }
   } 
-  res.status(400).send();
+  res.status(400).json({message: "invalid data"});
 
-  
-  
 });
+
+router.post('/logout', function(req, res, next){
+  req.session.destroy()
+  res.send()
+})
 
 module.exports = router;
