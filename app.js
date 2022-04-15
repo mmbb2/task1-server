@@ -1,11 +1,13 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var logger = require('morgan');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const logger = require('morgan');
 const cors = require('cors');
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const mongoose = require('mongoose')
+require('dotenv').config();
 
 var app = express();
 
@@ -16,7 +18,7 @@ app.use(cors({
     origin: ['http://localhost:3000']
 }))
 app.use(session({
-    secret: 'eyfhrgfgrfrty84fwir767',
+    secret: process.env.JWT_ACCESS_SECRET,
     saveUninitialized: false,
     resave: false, 
     cookie: {
@@ -34,5 +36,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+const start = async () => {
+    try {
+      await mongoose.connect(process.env.MONGO_DB_CONNECTION);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  
+  start();
 
 module.exports = app;
